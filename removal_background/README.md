@@ -5,6 +5,7 @@
 #### Dataset: cocopersonsegmentation hoặc person-segmentation-dataset
 
 #### Một số kết quả khá quan:
+Vì mới trên 1 epoch nên kết quả chưa được tốt, có thể tăng số epoch lên chắc sẽ khá quan hơn
 
 ![image](https://user-images.githubusercontent.com/72034584/149666138-9d4c3a96-3b2d-4e82-8137-13513fb8b5fc.png)
 
