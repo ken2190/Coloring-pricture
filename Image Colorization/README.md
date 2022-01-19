@@ -35,3 +35,5 @@ Trong không gian màu L * a * b, chúng ta lại có ba số cho mỗi pixel nh
     ![alt](https://raw.githubusercontent.com/moein-shariatnia/Deep-Learning/main/Image%20Colorization%20Tutorial/files/loss.jpg)
 * **Một số notebook tham khảo**
   * [LINK](https://colab.research.google.com/github/moein-shariatnia/Deep-Learning/blob/main/Image%20Colorization%20Tutorial/Image%20Colorization%20with%20U-Net%20and%20GAN%20Tutorial.ipynb) 
+* **Một số video tham khảo**
+  * [VIDEO](https://www.youtube.com/watch?v=v88IUAsgfz0) 
