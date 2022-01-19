@@ -34,6 +34,7 @@ Trong không gian màu L * a * b, chúng ta lại có ba số cho mỗi pixel nh
   * Nếu chúng ta chỉ sử dụng độ mất L1, mô hình vẫn học cách chỉnh màu hình ảnh nhưng nó sẽ mang tính bảo thủ và phần lớn thời gian sử dụng các màu như "xám" hoặc "nâu" vì khi nó nghi ngờ màu nào là tốt nhất, nó sẽ lấy giá trị trung bình và sử dụng những màu này để giảm tổn thất L1 nhiều nhất có thể (nó tương tự như hiệu ứng làm mờ của mất L1 hoặc L2 trong tác vụ siêu phân giải). Ngoài ra, Suy hao L1 được ưa thích hơn Suy hao L2 (hoặc sai số bình phương trung bình) vì nó làm giảm tác động của việc tạo ra hình ảnh màu xám. Vì vậy, hàm mất mát kết hợp của chúng tôi sẽ là:
     ![alt](https://raw.githubusercontent.com/moein-shariatnia/Deep-Learning/main/Image%20Colorization%20Tutorial/files/loss.jpg)
 * **Một số notebook tham khảo**
-  * [LINK](https://colab.research.google.com/github/moein-shariatnia/Deep-Learning/blob/main/Image%20Colorization%20Tutorial/Image%20Colorization%20with%20U-Net%20and%20GAN%20Tutorial.ipynb) 
+  * [LINK 1](https://colab.research.google.com/drive/1EUdLJpo39zMW6JLhya4_E1nJQ4WegZVl?authuser=1#scrollTo=Q_Unpb58dohK)
+  * [LINK 2](https://colab.research.google.com/github/moein-shariatnia/Deep-Learning/blob/main/Image%20Colorization%20Tutorial/Image%20Colorization%20with%20U-Net%20and%20GAN%20Tutorial.ipynb) 
 * **Một số video tham khảo**
   * [VIDEO](https://www.youtube.com/watch?v=v88IUAsgfz0) 
