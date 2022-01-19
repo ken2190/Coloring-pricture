@@ -15,7 +15,7 @@ Phần encoder thường chỉ là một mạng CNN thông thường nhưng bỏ
 #### Một số kết quả khá quan:
 Vì mới trên 1 epoch nên kết quả chưa được tốt, có thể tăng số epoch lên chắc sẽ khá quan hơn.
 
-Cột ảnh đầu tiên là ảnh gốc ban đầu, cột thứ 2 là ảnh dự đoán và chèn background mới, cột thứ 3 là labels
+Cột ảnh đầu tiên là ảnh gốc ban đầu, cột thứ 2 là ảnh dự đoán và chèn background mới, cột thứ 3 là dự đoán
 
 ![image](https://user-images.githubusercontent.com/72034584/149666138-9d4c3a96-3b2d-4e82-8137-13513fb8b5fc.png)
 
