@@ -38,3 +38,8 @@ Trong không gian màu L * a * b, chúng ta lại có ba số cho mỗi pixel nh
   * [LINK 2](https://colab.research.google.com/github/moein-shariatnia/Deep-Learning/blob/main/Image%20Colorization%20Tutorial/Image%20Colorization%20with%20U-Net%20and%20GAN%20Tutorial.ipynb) 
 * **Một số video tham khảo**
   * [VIDEO](https://www.youtube.com/watch?v=v88IUAsgfz0) 
+
+* **Một số bài viết tham khảo**
+  * [POSTS 1](https://blog.floydhub.com/colorizing-and-restoring-old-images-with-deep-learning/)
+  * [POSTS 2](https://blog.floydhub.com/colorizing-b-w-photos-with-neural-networks/) 
+
