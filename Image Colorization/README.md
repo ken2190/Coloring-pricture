@@ -17,12 +17,21 @@ Trong không gian màu L * a * b, chúng ta lại có ba số cho mỗi pixel nh
 ## Tìm hiểu mạng GAN
 
 * Như chúng ta đã được học thì một mạng GAN có phần cơ bản: generator và discriminator(sinh sản và phân biệt), tùy nhiên cần nhớ rằng là 2 mạng này cần hoạt động cùng nhau. Thật ra ỷ tưởng GAN bắt nguồn từ zero-sum non-cooperative game, hiểu đơn giản như trò chơi đối kháng 2 người (cờ vua, cờ tướng). Ở mỗi lượt thì cả 2 đều muốn maximize cơ hội thắng của tôi và minimize cơ hội thắng của đối phương. Discriminator và Generator trong mạng GAN giống như 2 đối thủ trong trò chơi. 
-* Vì mỗi mạng đều làm việc với mục tiêu khác nhau vì vậy cần thiết kế hàm loss cho mỗi mạng
-
-
-
-
-
-
+* Vì mỗi mạng đều làm việc với mục tiêu khác nhau vì vậy cần thiết kế hàm loss cho mỗi mạng. Tuy nhiên trong bài toán chúng ta đang làm đây thì sẽ L1-LOSS cho các 2 mạng.
+* Chúng ta sẽ triển khai giống bài toán pix2pix(image-to-image-Translation with Conditional Adversarial Networks)
+* |[Paper](https://arxiv.org/abs/1611.07004)|[Demo pix2pix](https://affinelayer.com/pixsrv/)|
+* Triển khai mạng GAN trong bài toán này:
+  * Mạng Generator sẽ lấy hình ảnh xám thang đo L, và tạo ra 2 kênh a,b
+  * Mạng Discriminator sẽ lấy 2 kênh được tạo ra đó ghép với hình ảnh xám đầu(Kênh L) và quyết định 3 kênh mới này giả hay thật
+  * Tất nhiên Mạng Discriminator cũng cần xem một số hình ảnh thực (hình ảnh 3 kênh một lần nữa trong không gian màu Lab) không phải được tạo ra và nên mới biết rằng chúng là thật. 
+  * Hình ảnh thang độ xám mà cả Generator và Discriminator đều nhìn thấy là điều kiện mà chúng tôi cung cấp cho cả hai mô hình trong GAN của chúng tôi và mong rằng chúng sẽ xem xét điều kiện này.
+  * Hàm Loss Gan:
+    ![alt](https://raw.githubusercontent.com/moein-shariatnia/Deep-Learning/main/Image%20Colorization%20Tutorial/files/GAN_loss.jpg) 
+    
+    * x là ảnh xám, z là input noise cho mạng Generator, y là output 2 kênh màu a,b, G là mạng Generator, D là discriminator
+  * Chúng ta sẽ kết hợp chức năng mất mát với Mất mát L1 (bạn có thể biết tổn thất L1 là sai số tuyệt đối trung bình) của các màu dự đoán so với màu thực tế:
+    ![alt](https://raw.githubusercontent.com/moein-shariatnia/Deep-Learning/main/Image%20Colorization%20Tutorial/files/l1_loss.jpg)
+  * Nếu chúng ta chỉ sử dụng độ mất L1, mô hình vẫn học cách chỉnh màu hình ảnh nhưng nó sẽ mang tính bảo thủ và phần lớn thời gian sử dụng các màu như "xám" hoặc "nâu" vì khi nó nghi ngờ màu nào là tốt nhất, nó sẽ lấy giá trị trung bình và sử dụng những màu này để giảm tổn thất L1 nhiều nhất có thể (nó tương tự như hiệu ứng làm mờ của mất L1 hoặc L2 trong tác vụ siêu phân giải). Ngoài ra, Suy hao L1 được ưa thích hơn Suy hao L2 (hoặc sai số bình phương trung bình) vì nó làm giảm tác động của việc tạo ra hình ảnh màu xám. Vì vậy, hàm mất mát kết hợp của chúng tôi sẽ là:
+    ![alt](https://raw.githubusercontent.com/moein-shariatnia/Deep-Learning/main/Image%20Colorization%20Tutorial/files/loss.jpg)
 * **Một số notebook tham khảo**
   * [LINK](https://colab.research.google.com/github/moein-shariatnia/Deep-Learning/blob/main/Image%20Colorization%20Tutorial/Image%20Colorization%20with%20U-Net%20and%20GAN%20Tutorial.ipynb) 
