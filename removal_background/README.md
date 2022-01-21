@@ -25,49 +25,7 @@ Mô hình Densnet là được phát triển từ mô hình resnet, nhưng thay 
 
 Chúng ta sẽ train mô hình giống như mô tả trong [paper](https://arxiv.org/pdf/1611.09326.pdf) standard cross entropy loss, RMSProp optimizer with 1e-3 learning rate and small decay. Khởi tạo trọng số HeUniform, 
 
-```python
-#Layer
-def conv_block(x,n_filters,filter_size = 3, drop_out = 0.2):
-  x = BatchNormalization()(x)
-  x = Activation('relu')(x)
-  x = Conv2D(n_filters,filter_size,padding='same',kernel_initializer='he_uniform')(x)
-  if drop_out != 0:
-    x = Dropout(drop_out)(x)
-  return x
-```
 
-```python
-#dense_block bên encoder
-def down_dense_block(x,growth_rate, blocks, drop_out):
-  for i in range(blocks):
-    x1 = conv_block(i,growth_rate,filter_size=3,drop_out=drop_out)
-    x = Concatenate(axis = 3)([x,x1])
-  return x
-  
-#dense_block bên decoder
-def up_dense_block(x,growth_rate, blocks, drop_out):
-  block_to_upsample = []
-  for i in range(blocks):
-    x1 = conv_block(i,growth_rate,filter_size=3,drop_out=drop_out)
-    block_to_upsample.append(x1)
-    x = Concatenate(axis=3)([x, x1])
-  return Concatenate(axis=3)(block_to_upsample)
-```
-
-```python
-def transition_down(x, n_filters, dropout):
-    x = conv_block(x, n_filters, filter_size=1, dropout=dropout)
-    x = MaxPooling2D(pool_size=(2, 2))(x)
-    return x
-```
-
-```python
-def transition_up(x, skip_connection, n_filters_keep):
-    x = Conv2DTranspose(filters=n_filters_keep, kernel_size=3, strides=(2, 2), padding='same', activation='relu',
-                        kernel_initializer='he_uniform')(x)
-    x = Concatenate(axis=3)([x, skip_connection])
-    return x
-```
 
 * [Notebook](https://files.fast.ai/part2/lesson14/)
 * Một số kết quả khá quan hơn Unet
