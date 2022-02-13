@@ -1,5 +1,4 @@
-# Một số kiến trúc mạng triển khai:
-## Bài toán semantics segmentation
+# Một số kiến trúc mạng triển khai cho bài toán:
 ### [1. Kiến trúc mạng Unet](https://arxiv.org/pdf/1505.04597.pdf)
 Kiến trúc mạng có 2 phần cơ bản: encoder, decoder
 
@@ -9,69 +8,64 @@ Phần encoder thường chỉ là một mạng CNN thông thường nhưng bỏ
 
 ![alt](https://i.imgur.com/lKZGO0C.png)
 
+### 2. Kiến trúc mạng VGG16-UNET
+[Notebook(ver8-9-10)](https://www.kaggle.com/acousticmusic/unet-removal-background-ver1)
 
-### [2. Kiến trúc mạng Tiramisu](https://arxiv.org/pdf/1611.09326.pdf)
+Phần encoder sử dụng mạng CNN VGG16 dùng extract features.
 
-* Kiến trúc mạng
-
-![alt](https://miro.medium.com/max/694/0*8y3DsK9cGoW9tpne.) -------> ![Screenshot 2022-01-20 223450](https://user-images.githubusercontent.com/72034584/150370352-499f67c9-1d87-48c5-857f-cc8ddd4f6a6c.png)
-
-![Screenshot 2022-01-20 223450](https://user-images.githubusercontent.com/72034584/150372015-5adb61f7-bdcd-4bc9-8774-ca478626ced8.png)
-
-Mô hình tiramisu là một mô hình từ một khóa học của Jeremy Howard’s mới ra đời. Tên đầy đủ nó là "100 layers Tiramisu" ngụ ý là nó rất lớn, nhưng thực tế nó không phức tạp như vậy vì nó 9-10 triệu tham số. Mô hình tiramisu dựa trên mô hình Densnet. Và nó thêm phân skip-connections ở lớp up-sampling giống như mạng Unet.  
-
-Mô hình Densnet là được phát triển từ mô hình resnet, nhưng thay thế "ghi nhớ" cho lớp tiếp theo. Densnet lại có thể ghi nhớ tất cả các lớp xuyên suốt mô hình. Các kết nối này được gọi là kết nối đường cao tốc. Nó gây ra lạm phát số bộ lọc, được định nghĩa là "tốc độ tăng trưởng". Tiramisu có tốc độ phát triển là 16, do đó, với mỗi lớp, chúng tôi thêm 16 bộ lọc mới cho đến khi chúng tôi đạt đến các lớp 1072 bộ lọc. Bạn có thể mong đợi 1600 lớp vì đó là 100 lớp tiramisu, tuy nhiên, các lớp lấy mẫu lên sẽ làm giảm một số bộ lọc.
+Phần decoder sử dụng Unet
 
 
-Chúng ta sẽ train mô hình giống như mô tả trong [paper](https://arxiv.org/pdf/1611.09326.pdf) standard cross entropy loss, RMSProp optimizer with 1e-3 learning rate and small decay. Khởi tạo trọng số HeUniform, 
+### [3. Kiến trúc mạng U2NET-U2NETP](https://arxiv.org/abs/2005.09007)
+#### 3.1 Residual U-blocks
+Thông tin ngữ cảnh toàn cục (global) và cục bộ (local) rất quan trọng trong các bài toán về object detection and other segmentation tasks. Trong các modern CNN designs, such as VGG,Desnest,ResNet,so on. Với bộ các filters convolutional có kích thước 1x1, 3x3 thường xuyên được sử dụng trong việc trích xuất đặc trưng. Như vậy thì sẽ hiệu quả trong việc lưu trữ và mặt tính toán. Output sẽ chứa các local features bởi vì trường tiếp nhận của các bộ lọc 1x1, 3x3 quá nhỏ để để nắm thông tin toàn cục (global). Để thu thập được nhiều thông tin toàn cục (global) ở các features map có độ phân giải cao hơn từ các lớp nông. Ỷ tưởng tốt nhấy là phóng to trường tiếp nhận. 
+
+![image](https://user-images.githubusercontent.com/72034584/153568348-b0d4d9a6-5814-40d0-8244-f71ebf6f09ce.png) 
+
+Ở hình phía trên chúng ta có thể extract both local and non-local features bằng cách mở rộng trường tiếp nhận sử dụng cách là giãn nỡ convolution(dilated convolutional). Tuy nhiên, việc tiến hành giãn nở convolution nhiều trên input feature map(nhất là giải đoạn đầu) với độ phân giải gốc phải yêu cầu chi phí lớn về mặt tính toán. 
+
+![image](https://user-images.githubusercontent.com/72034584/153591013-66ed94de-193e-4fa8-9064-876029e847cd.png)
+
+Cảm hứng từ vởi Unet, có phương pháp được đề xuất Residual U-blocks, để nắm bắt đặc trưng đa quy mô trong giai đoạn. Nhìn hình phía trên ta có thể thấy, RSU-L(C_in,M,C_out), L ở đây là số layers trong phần encoder. C_in,C_out là biểu thị input,output channels. M biểu thị số channels trong các lớp bên trong RSU. 
+
+#### 3.2 Kiến trúc U2NET
+
+![image](https://user-images.githubusercontent.com/72034584/153592006-06b156d9-7284-4772-bdfd-636ad62d0e5c.png)
+
+Chúng ta có thể thấy kiến trúc hình dạng chữ U. Và có phần như đã đề cập ở trên encoder, decoder.
+
+**Trong phần encoder**: En_1,En_2,En_3,En_4 chúng ta sử dụng Residual U-blocks RSU-7,RSU-6,RSU-5,RSU-4, như nói trước đó 7,6,5,4 biểu thị chiều cao của RSU (Layers). L thường được cấu hình theo độ phân giải không gian của các input feature map.  Đối với feature maps có chiều rộng,cao lớn thì chúng ta sử dụng L lớn để thu thập thông tin ngữ cảnh hơn. En_5,En_6 có độ phân giải feature map khá thấp, Vì vậy ở 2 giai đoạn này chúng ta sử dụng RSU-4F (F có nghĩa là phiên bản giãn nở), chúng ta thay thể việc pooling and upsampling bằng dilated convolution. 
+
+**Trong phần decoder**: Cũng tương tự như bên encoder, De_5,De_4,De_3,De_2,De_1. Trong De_5, chúng ta sử dụng dilated version residual U-block RSU-4F tương tự như bên En_5,En_6. 
+Ở mỗi giai đoạn decoder lấy concatenation umsampled feature maps from its previous stage. Và các feature map của giai đoạn encoder đối xứng làm input đầu vào. 
+
+**Phần output**: U2NET tạo ra đầu ra 6 bên: S_6,S_5,S_4,S_3,S_2,S_1 tương đương En_6,De_5,De_4,De_3,De_2,De_1 bởi 3x3 convolution và 1 sigmoid function. 
+
+Tóm lại, thiết kế của U2 -Net cho phép có kiến trúc sâu với các tính năng đa quy mô phong phú và chi phí tính toán và bộ nhớ tương đối thấp. 
 
 
-
-* [Notebook](https://files.fast.ai/part2/lesson14/)
-* Một số kết quả khá quan hơn Unet
-![image](https://user-images.githubusercontent.com/72034584/150340219-2df1e1eb-9589-4e2f-a090-fd1a460a458c.png)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-### 3. Một số notebook và một số kết quả thu được từ mạng Unet
-#### [Đây là link kaggle để chạy thử notebook này](https://www.kaggle.com/acousticmusic/unet-removal-background-ver1)
+### 4. Một số notebook và một số kết quả thu được từ mạng VGG16-Unet
 
 #### Dataset: cocopersonsegmentation hoặc person-segmentation-dataset
 
 #### Một số kết quả khá quan:
-Vì mới trên 1 epoch nên kết quả chưa được tốt, có thể tăng số epoch lên chắc sẽ khá quan hơn.
 
-Cột ảnh đầu tiên là ảnh gốc ban đầu, cột thứ 2 là ảnh dự đoán và chèn background mới, cột thứ 3 là dự đoán
+|Input                                  |Output                                       |
+|-------------------------------------- |---------------------------------------------|
+|![ros](https://user-images.githubusercontent.com/72034584/153563915-23280981-3e30-4c29-93ea-a0b6dc9d5fdb.jpg)|![result_img](https://user-images.githubusercontent.com/72034584/153563950-37dba6e7-fb81-428a-8746-d632c194fe1d.jpg)|
+|![roses5](https://user-images.githubusercontent.com/72034584/153564138-f99d0449-66f3-4137-a12a-eeabb27f18b6.jpg)|![result_img1](https://user-images.githubusercontent.com/72034584/153564153-eb68445a-fdc5-4c6e-a61c-cb2abe8aff63.jpg)|
+|![qq1](https://user-images.githubusercontent.com/72034584/153564024-1d76f480-36bf-40a8-9513-2ae8b9838250.jpg)|![result_img2](https://user-images.githubusercontent.com/72034584/153564038-ce3a439a-7863-4097-97b3-ce87f2d4cf5d.jpg)|
 
-![image](https://user-images.githubusercontent.com/72034584/149666138-9d4c3a96-3b2d-4e82-8137-13513fb8b5fc.png)
 
-![image](https://user-images.githubusercontent.com/72034584/149666148-52af094f-6531-4238-b657-0719730ebca3.png)
 
-![image](https://user-images.githubusercontent.com/72034584/149666157-16c04a82-5012-4aae-b539-e8c3f838e7b6.png)
+### 5. Một số notebook và một số kết quả thu được từ mạng U2NET
 
-![image](https://user-images.githubusercontent.com/72034584/149666178-2b960a1a-db01-44af-82b6-e5798ff293a9.png)
+|Input                                  |Output                                       |
+|-------------------------------------- |---------------------------------------------|
+|![ros](https://user-images.githubusercontent.com/72034584/153563915-23280981-3e30-4c29-93ea-a0b6dc9d5fdb.jpg)|![ross](https://user-images.githubusercontent.com/72034584/153599158-bde94f5b-6555-48a7-9612-1d5ac369e9ec.jpg)|
+|![roses5](https://user-images.githubusercontent.com/72034584/153564138-f99d0449-66f3-4137-a12a-eeabb27f18b6.jpg)|![tải xuống](https://user-images.githubusercontent.com/72034584/153599439-9eb52877-dd2d-4734-b8cf-cb2a0823229e.jpg)|
+|![photo-1-15902508724041176556397](https://user-images.githubusercontent.com/72034584/153599841-ce642fa0-14c3-4d2e-ab4e-9d058c09141c.jpg)|![tải xuống (1)](https://user-images.githubusercontent.com/72034584/153600030-1792eb2b-4355-4047-b534-f4baeae8564f.jpg)|
 
-![image](https://user-images.githubusercontent.com/72034584/150349372-3a9f7a71-0cc4-461f-ac32-c8f52ec1e96f.png)
-
-![image](https://user-images.githubusercontent.com/72034584/150349302-3ffc4b1e-e9ef-4267-9aac-df5c6e89ae8e.png)
-
-![image](https://user-images.githubusercontent.com/72034584/150354486-6489cafe-8a41-4a6f-8f83-caac9caa5cb9.png)
-
-![image](https://user-images.githubusercontent.com/72034584/150356631-cbdda2f4-0c99-4b00-b7e2-d2056b1120af.png)
 
 
 #### Posts
