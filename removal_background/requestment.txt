@@ -1,6 +1,0 @@
-skimage
-tensorflow
-cv2
-seaborn
-numpy
-matplotlib
