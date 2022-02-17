@@ -2,12 +2,20 @@ from model import *
 from load_data import *
 import matplotlib.pyplot as plt
 from PIL import Image
+import cv2
 
 
 #Load weight model
-model_dir = '../U2NET/weights/weights_u2netp/u2netp_1.pth'
+model_name = "u2netp"
+model_dir = '../U2NET/weights/weights_u2net/model_u2net_59000_train_0.639294_tar_0.072181.pth'
 
-net = U2NETP(3, 1)
+print("Loading U-2-Net...")
+if(model_name=='u2net'):
+    print("...load U2NET---173.6 MB")
+    net = U2NET(3,1)
+elif(model_name=='u2netp'):
+    print("...load U2NEP---4.7 MB")
+    net = U2NETP(3,1)
 net.load_state_dict(torch.load(model_dir))
 if torch.cuda.is_available():
     net.cuda()
@@ -74,11 +82,3 @@ def run(img):
     del d1, d2, d3, d4, d5, d6, d7
 
     return im,predict_np
-
-img = Image.open('../img_test/ros.jpg')
-img1,size = run(np.array(img))
-mask = img1.convert('L').resize((img.width, img.height))
-empty = Image.new("RGBA", img.size, 0)
-img = Image.composite(img, empty, mask)
-plt.figure(figsize = (40,40))
-plt.imshow(img)
